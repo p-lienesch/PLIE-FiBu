@@ -22,7 +22,12 @@ namespace PLIE_FiBu_FV1.Models
         name2,
         accessible,
         asset,
-        consisted
+        consisted,
+        posted,
+        date,
+        account_id,
+        amount,
+        accounting_record_id
     }
     abstract class Template
     {
@@ -105,8 +110,26 @@ namespace PLIE_FiBu_FV1.Models
                         }
                         break;
                     case Controllers.ClassType.accounting_record:
+                        objects = Read(Controllers.ClassType.accounting_record);
+                        foreach (object obj2 in objects)
+                        {
+                            Models.AccountingRecord temp = (Models.AccountingRecord)obj2;
+                            if (temp.GetName() == candidate)
+                            {
+                                result = false;
+                            }
+                        }
                         break;
                     case Controllers.ClassType.accounting_record_line:
+                        objects = Read(Controllers.ClassType.accounting_record_line);
+                        foreach (object obj2 in objects)
+                        {
+                            Models.AccountingRecordLine temp = (Models.AccountingRecordLine)obj2;
+                            if (temp.GetDescription() == candidate)
+                            {
+                                result = false;
+                            }
+                        }
                         break;
                     default:
                         break;

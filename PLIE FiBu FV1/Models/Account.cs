@@ -187,7 +187,52 @@ namespace PLIE_FiBu_FV1.Models
         }
         public List<Int32> GetAccountingRecordIDs()
         {
-
+            //AuxVariables
+            List<object> objects;
+            List<Int32> result;
+            //Run Method
+            result = new List<int>();
+            objects = Read(Controllers.ClassType.accounting_record);
+            foreach (object obj in objects)
+            {
+                Models.AccountingRecord temp = (Models.AccountingRecord)obj;
+                if (temp.AccountIDExistsInLine(primary_key))
+                {
+                    result.Add(temp.GetID());
+                }
+            }
+            return result;
+        }
+        public double GetSaldo()
+        {
+            //AuxVariables
+            double result;
+            List<object> objects;
+            List<Int32> accounting_record_line_entry_nos;
+            //Run Method
+            result = 0;
+            accounting_record_line_entry_nos = new List<int>();
+            objects = Read(Controllers.ClassType.accounting_record);
+            foreach (object obj in objects)
+            {
+                Models.AccountingRecord temp = (Models.AccountingRecord)obj;
+                if (temp.AccountIDExistsInLine(primary_key))
+                {
+                    foreach (Int32 line_entry_no in temp.GetAccountingRecordLineEntryNos())
+                    {
+                        accounting_record_line_entry_nos.Add(line_entry_no);
+                    }
+                }
+            }
+            if (accounting_record_line_entry_nos.Count() > 0)
+            {
+                foreach (Int32 accounting_record_line_entry_no in accounting_record_line_entry_nos)
+                {
+                    Models.AccountingRecordLine line = new AccountingRecordLine(accounting_record_line_entry_no);
+                    result += line.GetAmount();
+                }
+            }
+            return result;
         }
         protected override bool OnAfterDelete(object obj)
         {

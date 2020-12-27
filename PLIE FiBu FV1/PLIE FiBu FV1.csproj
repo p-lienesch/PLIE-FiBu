@@ -55,6 +55,8 @@
       <DependentUpon>FormMain.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\Account.cs" />
+    <Compile Include="Models\AccountingRecord.cs" />
+    <Compile Include="Models\AccountingRecordLine.cs" />
     <Compile Include="Models\Template.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

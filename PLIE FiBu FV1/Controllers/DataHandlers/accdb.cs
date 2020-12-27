@@ -17,15 +17,24 @@ namespace PLIE_FiBu_FV1.Controllers.DataHandlers
         //Methods
         public override object Read(Int32 primary_key, ClassType class_type)
         {
+            if (DataBaseCheck(path))
+            {
 
+            }
         }
         public override List<object> Read(ClassType class_type)
         {
+            if (DataBaseCheck(path))
+            {
 
+            }
         }
         public override object Write(object obj)
         {
+            if (DataBaseCheck(path))
+            {
 
+            }
         }
         public bool DataBaseCheck(string path)
         {
@@ -43,10 +52,22 @@ namespace PLIE_FiBu_FV1.Controllers.DataHandlers
                 return false;
             }
         }
+        public bool SetPath(string path)
+        {
+            if (path != "")
+            {
+                this.path = path;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
         //Constructors
         public accdb(string path)
         {
-            DataBaseCheck(path);
+            this.path = path;
         }
     }
 }

@@ -61,19 +61,30 @@ namespace PLIE_FiBu_FV1.Controllers
                     return new object();
             }
         }
-        public bool GetStorageTypeValues(string type, string path)
-        {//AuxVariables
+        //Constructors
+        public StorageController(string type, string path)
+        {
+            //AuxVariables
             string setting_path, line;
             Int32 counter;
             StreamReader reader;
-            bool result;
             //Run Method
-            result = false;
             setting_path = "Storage.txt";
             storage_type = "";
             storage_path = "";
-            if (storage_path == "" |
-                storage_type == "")
+            if (type != "")
+            {
+                if (path != "")
+                {
+                    storage_type = type;
+                    storage_path = path;
+                }
+                else
+                {
+                    //ToDo
+                }
+            }
+            else
             {
                 if (File.Exists(setting_path))
                 {
@@ -97,23 +108,6 @@ namespace PLIE_FiBu_FV1.Controllers
                     reader.Close();
                 }
             }
-            else
-            {
-                storage_type = type;
-                storage_path = path;
-            }
-            if (DataExists())
-            {
-                result = DataIntegrityCheck();
-            }
-            return result;
-        }
-        private bool DataExists()
-        {
-            //AuxVariables
-            bool result;
-            //Run Method
-            result = true;
             if (storage_path == "" |
                 storage_type == "")
             {
@@ -121,29 +115,18 @@ namespace PLIE_FiBu_FV1.Controllers
                                                      "Error",
                                                      System.Windows.Forms.MessageBoxButtons.OK,
                                                      System.Windows.Forms.MessageBoxIcon.Error);
-                result = false;
             }
-            return result;
-        }
-        private bool DataIntegrityCheck()
-        {
-            //AuxVariables
-            bool result;
-            //Run Method
-            result = true;
-            switch (storage_type)
+            else
             {
-                case "accdb":
-                    return accdb.DataBaseCheck(storage_path);
-                default:
-                    break;
+                switch (storage_type)
+                {
+                    case "accdb":
+                        accdb = new DataHandlers.accdb(storage_path);
+                        break;
+                    default:
+                        break;
+                }
             }
-            return result;
-        }
-        //Constructors
-        public StorageController()
-        {
-            
         }
     }
 }
