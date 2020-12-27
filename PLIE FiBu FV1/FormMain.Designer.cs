@@ -1,7 +1,7 @@
 ﻿
 namespace PLIE_FiBu_FV1
 {
-    partial class Form1
+    partial class FormMain
     {
         /// <summary>
         /// Erforderliche Designervariable.
