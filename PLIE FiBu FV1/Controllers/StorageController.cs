@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.IO;
 
 namespace PLIE_FiBu_FV1.Controllers
 {
@@ -14,11 +13,11 @@ namespace PLIE_FiBu_FV1.Controllers
         accounting_record,
         accounting_record_line
     }
-    class StorageController
+    class StorageController : Controllers.DataHandlers.Template
     {
         //Fields
-        string storage_type, storage_path;
-        Controllers.DataHandlers.accdb accdb;
+        string settings_path, storage_type, storage_path;
+        Controllers.DataHandlers.Accdb accdb;
         //Methods
         public ClassType GetClassTypeOfObject(object obj)
         {
@@ -26,12 +25,20 @@ namespace PLIE_FiBu_FV1.Controllers
             {
                 return ClassType.account;
             }
+            else if (obj is Models.AccountingRecord)
+            {
+                return ClassType.accounting_record;
+            }
+            else if (obj is Models.AccountingRecordLine)
+            {
+                return ClassType.accounting_record_line;
+            }
             else
             {
                 return ClassType.none;
             }
         }
-        public virtual List<object> Read(ClassType class_type)
+        public override List<object> Read(ClassType class_type)
         {
             switch (storage_type)
             {
@@ -41,7 +48,7 @@ namespace PLIE_FiBu_FV1.Controllers
                     return new List<object>();
             }
         }
-        public virtual object Read(Int32 primary_key, ClassType class_type)
+        public override object Read(int primary_key, ClassType class_type)
         {
             switch (storage_type)
             {
@@ -51,81 +58,79 @@ namespace PLIE_FiBu_FV1.Controllers
                     return new object();
             }
         }
-        public virtual object Write(object obj)
+        public override object Write(object obj, bool delete)
         {
             switch (storage_type)
             {
                 case "accdb":
-                    return accdb.Write(obj);
+                    return accdb.Write(obj, delete);
                 default:
                     return new object();
+            }
+        }
+        public void SetStorageTypeValues(string type, string path)
+        {
+            //AuxVariables
+            System.IO.StreamWriter writer;
+            //Run Method
+            if (!System.IO.File.Exists(settings_path))
+            {
+                System.IO.File.Create(settings_path);
+            }
+            writer = new System.IO.StreamWriter(settings_path);
+            writer.WriteLine(type);
+            writer.WriteLine(path);
+            writer.Close();
+        }
+        private void GetStorageTypeValues()
+        {
+            //AuxVariables
+            System.IO.StreamReader reader;
+            string line;
+            Int32 counter;
+            //Run Method
+            storage_path = "";
+            storage_type = "";
+            if (System.IO.File.Exists(settings_path))
+            {
+                counter = 0;
+                reader = new System.IO.StreamReader(settings_path);
+                while ((line = reader.ReadLine()) != null)
+                {
+                    if (counter == 0)
+                    {
+                        storage_type = line;
+                    }
+                    else if (counter == 1)
+                    {
+                        storage_path = line;
+                    }
+                    counter++;
+                }
+                reader.Close();
+                if (storage_type == "" | storage_path == "")
+                {
+                    storage_path = "";
+                    storage_type = "";
+                }
             }
         }
         //Constructors
         public StorageController(string type, string path)
         {
-            //AuxVariables
-            string setting_path, line;
-            Int32 counter;
-            StreamReader reader;
-            //Run Method
-            setting_path = "Storage.txt";
-            storage_type = "";
-            storage_path = "";
-            if (type != "")
+            if (type != "" & path != "")
             {
-                if (path != "")
-                {
-                    storage_type = type;
-                    storage_path = path;
-                }
-                else
-                {
-                    //ToDo
-                }
+                SetStorageTypeValues(type, path);
             }
-            else
+            GetStorageTypeValues();
+            settings_path = "StorageSettings.txt";
+            switch (storage_type)
             {
-                if (File.Exists(setting_path))
-                {
-                    counter = 0;
-                    reader = new StreamReader(setting_path);
-                    while ((line = reader.ReadLine()) != null)
-                    {
-                        switch (counter)
-                        {
-                            case 0:
-                                storage_type = line;
-                                break;
-                            case 1:
-                                storage_path = line;
-                                break;
-                            default:
-                                break;
-                        }
-                        counter++;
-                    }
-                    reader.Close();
-                }
-            }
-            if (storage_path == "" |
-                storage_type == "")
-            {
-                System.Windows.Forms.MessageBox.Show("The Settings are not defined",
-                                                     "Error",
-                                                     System.Windows.Forms.MessageBoxButtons.OK,
-                                                     System.Windows.Forms.MessageBoxIcon.Error);
-            }
-            else
-            {
-                switch (storage_type)
-                {
-                    case "accdb":
-                        accdb = new DataHandlers.accdb(storage_path);
-                        break;
-                    default:
-                        break;
-                }
+                case "accdb":
+                    accdb = new DataHandlers.Accdb(storage_path);
+                    break;
+                default:
+                    break;
             }
         }
     }

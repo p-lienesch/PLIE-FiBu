@@ -140,7 +140,7 @@ namespace PLIE_FiBu_FV1.Models
         //Constructors
         private void ConstructorCode()
         {
-            storage_controller = new Controllers.StorageController();
+            storage_controller = new Controllers.StorageController("","");
         }
         public Template(bool temp)
         {

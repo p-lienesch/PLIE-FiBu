@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\DataHandlers\accdb.cs" />
+    <Compile Include="Controllers\DataHandlers\Template.cs" />
     <Compile Include="Controllers\StorageController.cs" />
     <Compile Include="FormMain.cs">
       <SubType>Form</SubType>
